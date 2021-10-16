@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider = "typegraphql-prisma"
+  output   = "./generated/type-graphql"
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  viewCount Int      @default(0)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+model OKR {
+  id         Int        @id @default(autoincrement())
+  squence    Int?       @default(autoincrement())
+  obj        Obj        @relation(fields: [objId], references: [id])
+  kvs        KeyValue[]
+  objId      Int        @unique
+  keyValueId Int
+  UserOKRs   UserOKRs?  @relation(fields: [userOKRsId], references: [id])
+  userOKRsId Int?
+}
+
+model Obj {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  okr       OKR?
+}
+
+model KeyValue {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  okr       OKR      @relation(fields: [okrId], references: [id])
+  okrId     Int
+}
+
+model TimeStap {
+  id        Int        @id @default(autoincrement())
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userOkrs  UserOKRs[]
+}
+
+model UserOKRs {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  okrs       OKR[]
+  timeStapId Int?
+  TimeStap   TimeStap? @relation(fields: [timeStapId], references: [id])
+}
