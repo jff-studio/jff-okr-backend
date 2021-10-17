@@ -1,0 +1,17 @@
+version: '3'
+services:
+  okr-postgres:
+    image: postgres:10.3
+    restart: always
+    ports:
+      - '6432:7432'
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_DB: okr
+      POSTGRES_PASSWORD: 111111
+    command: -p 7432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres: ~
